@@ -1,0 +1,29 @@
+---
+title: "HW2"
+output: github_document
+date: "2024-09-26"
+---
+
+```{r setup, include=FALSE}
+
+library(tidyverse) #read csv
+library(readxl) #read excel
+library(haven) #read SAS
+```
+
+## Problem 1
+
+```{r include=FALSE}
+transit_df = 
+  read.csv("Data_Imports/NYC_Transit_Subway_Entrance_And_Exit_Data.csv") %>% 
+  janitor::clean_names() %>% 
+  select(line:entry, vending, ada) %>% 
+  mutate(
+    entry = case_match(
+      entry,
+      "YES" ~ TRUE,
+      "NO" ~ FALSE
+  )
+)
+```
+After cleaning the initial NYC transit dataset, the resulting dataset is described by **`r ncol(transit_df)`** variables, which are: **`r colnames(transit_df)`**. This dataset is **`r nrow(transit_df)`** rows by **`r ncol(transit_df)`** columns. The initial cleaning steps included changing column names to make sure they were all formatted the same way (in snake_case), removing certain columns not necessary for data analysis, and converting the the variables under the entry column into logical variables. Because the routes are all seperated into different columns, this data isn't tidy. To tidy, the dataset would contain one column that held the information for route number and another column that held the information on whether there was a train that followed that route at each location.
