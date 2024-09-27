@@ -80,3 +80,58 @@ The proportion of stations with no vending that allow entry is **`r prop_entranc
 There are **`r nrow(transit_tidy_A_df)`** distinct stations that serve the A train. Of these stations, **`r nrow(transit_tidy_ada_df)`** are ADA compliant
 
 ##Problem 2
+
+```{r include=FALSE}
+mr_trash_df = 
+  read_excel("Data_Imports/202309_Trash_Wheel_Collection_Data.xlsx", 
+             sheet = "Mr. Trash Wheel",
+             range = "A2:N586",
+             na = c(".", "NA", ""),
+             ) %>% 
+  janitor::clean_names() %>% 
+  mutate(
+    vessel_name = "Mr. Trash Wheel",
+    sports_balls = as.integer(round(sports_balls)),
+    year = as.double(year)
+    ) %>% 
+  relocate(vessel_name)
+```
+
+```{r include=FALSE}
+prof_trash_df = 
+  read_excel("Data_Imports/202309_Trash_Wheel_Collection_Data.xlsx", 
+             sheet = "Professor Trash Wheel",
+             range = "A2:M108",
+             na = c(".", "NA", ""),
+             ) %>% 
+  janitor::clean_names()%>% 
+  mutate(
+    vessel_name = "Professor Trash Wheel",
+    sports_balls = "",
+    sports_balls = as.integer(sports_balls)
+    )%>% 
+  relocate(vessel_name, 1:12, sports_balls)
+```
+
+```{r include=FALSE}
+gwynnda_trash_df = 
+  read_excel("Data_Imports/202309_Trash_Wheel_Collection_Data.xlsx", 
+             sheet = "Gwynnda Trash Wheel",
+             range = "A2:L157",
+             na = c(".", "NA", ""),
+             ) %>% 
+  janitor::clean_names()%>% 
+  mutate(
+    vessel_name = "Gwynnda Trash Wheel",
+    sports_balls = "",
+    glass_bottles = "",
+    sports_balls = as.integer(sports_balls),
+    glass_bottles = as.double(glass_bottles)
+    )%>% 
+  relocate(vessel_name, 1:9, glass_bottles, 10:11, sports_balls)
+
+```
+
+```{r include=FALSE}
+combined_trash_df = bind_rows(mr_trash_df, prof_trash_df, gwynnda_trash_df)
+```
