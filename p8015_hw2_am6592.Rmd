@@ -79,7 +79,7 @@ The proportion of stations with no vending that allow entry is **`r prop_entranc
 
 There are **`r nrow(transit_tidy_A_df)`** distinct stations that serve the A train. Of these stations, **`r nrow(transit_tidy_ada_df)`** are ADA compliant
 
-##Problem 2
+## Problem 2
 
 ```{r include=FALSE}
 mr_trash_df = 
@@ -134,4 +134,33 @@ gwynnda_trash_df =
 
 ```{r include=FALSE}
 combined_trash_df = bind_rows(mr_trash_df, prof_trash_df, gwynnda_trash_df)
+```
+
+
+## Problem 3
+```{r}
+bakers_df = 
+  read.csv("Data_Imports/gbb_datasets/bakers.csv", na = c(".", "NA", "", "N/A")) %>% 
+  janitor::clean_names() %>% 
+  arrange(series) %>% 
+  separate(baker_name, into = c("baker_first_name", "baker_last_name"), sep = " ")
+  
+
+bakes_df = 
+  read.csv("Data_Imports/gbb_datasets/bakes.csv", na = c(".", "NA", "", "N/A")) %>% 
+  janitor::clean_names() %>% 
+  rename(baker_first_name = baker)
+
+results_df = 
+  read.csv("Data_Imports/gbb_datasets/results.csv", na = c(".", "NA", "", "N/A"), 
+          skip = 3,
+          header = FALSE, 
+          col.names = c("series", "episode", "baker", "technical", "result")) %>% 
+  rename(baker_first_name = baker)
+  
+gbb_half_df = left_join(results_df, bakes_df, 
+                        by = c("baker_first_name"="baker_first_name", "series"="series", "episode"="episode"))
+gbb_full_df = left_join(gbb_half_df, bakers_df, 
+                        by = c("baker_first_name"="baker_first_name", "series"="series")) %>% 
+  relocate(series, baker_first_name, 8:11, episode, 4:7)
 ```
