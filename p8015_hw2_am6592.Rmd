@@ -134,7 +134,14 @@ gwynnda_trash_df =
 
 ```{r include = FALSE}
 combined_trash_df = bind_rows(mr_trash_df, prof_trash_df, gwynnda_trash_df)
+
+gwynnda_june22_df =
+  gwynnda_trash_df %>% 
+  filter(year == 2022) %>% 
+  filter(month == "June")
 ```
+
+Problem two combine three data set: data from Mr. Trash Wheel, Professor Trash Wheel, and Gwynda Trash Wheel. The combined data set is **`r nrow(combined_trash_df)`** rows by **`r ncol(combined_trash_df)`** columns. The data is separated by the amount of Plastic Bottle, Polystyrene, Cigarette Butts, Glass Bottles, Plastic Bags, Wrappers, and Sports Balls each vessel cleaned up. The total trash Professor Trash Wheel cleaned up was **`r sum(pull(prof_trash_df, weight_tons))`** tons. The amount of cigaretter butts Gwynnda picked up in June 2022 was **`r sum(pull(gwynnda_june22_df, cigarette_butts))`** butts.
 
 
 ## Problem 3
