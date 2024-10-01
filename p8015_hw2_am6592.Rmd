@@ -149,13 +149,16 @@ bakers_df =
 bakes_df = 
   read.csv("Data_Imports/gbb_datasets/bakes.csv", na = c(".", "NA", "", "N/A")) %>% 
   janitor::clean_names() %>% 
-  rename(baker_first_name = baker)
+  mutate(baker = ifelse(baker == '"Jo"', "Jo", baker)) %>% 
+  rename(baker_first_name = baker) 
+  
 
 results_df = 
   read.csv("Data_Imports/gbb_datasets/results.csv", na = c(".", "NA", "", "N/A"), 
           skip = 3,
           header = FALSE, 
           col.names = c("series", "episode", "baker", "technical", "result")) %>% 
+  mutate(baker = ifelse(baker == "Joanne", "Jo", baker)) %>% 
   rename(baker_first_name = baker)
   
 gbb_half_df = left_join(results_df, bakes_df, 
