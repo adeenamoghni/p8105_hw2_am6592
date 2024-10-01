@@ -4,7 +4,7 @@ output: github_document
 date: "2024-09-26"
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include = FALSE}
 
 library(tidyverse) #read csv
 library(readxl) #read excel
@@ -14,7 +14,7 @@ library(dplyr)
 
 ## Problem 1
 
-```{r include=FALSE}
+```{r include = FALSE}
 transit_df = 
   read.csv("Data_Imports/NYC_Transit_Subway_Entrance_And_Exit_Data.csv", na = c(".", "NA", "")) %>% 
   janitor::clean_names() %>% 
@@ -29,20 +29,20 @@ transit_df =
 ```
 After cleaning the initial NYC transit dataset, the resulting dataset is described by **`r ncol(transit_df)`** variables, which are: **`r colnames(transit_df)`**. This dataset is **`r nrow(transit_df)`** rows by **`r ncol(transit_df)`** columns. The initial cleaning steps included changing column names to make sure they were all formatted the same way (in snake_case), removing certain columns not necessary for data analysis, and converting the data points under the entry column into logical variables. Because the routes are all separated into different columns, this data isn't tidy. To tidy, the data set would contain one column that held the information for route number and another column that held the information on whether there was a train that followed that route at each location.
 
-```{r include=FALSE}
+```{r include = FALSE}
 line_station_df = 
   transit_df %>% 
   mutate(line_station = paste(line, station_name, sep= " ")) %>% 
   distinct(line_station, .keep_all = TRUE)
 ```
 
-```{r include=FALSE}
+```{r include = FALSE}
 ada_compliant_df = 
   line_station_df %>% 
   filter(ada == TRUE)
 ```
 
-```{r include=FALSE}
+```{r include = FALSE}
 no_vending_df = 
   line_station_df %>% 
   filter(vending == "NO")
@@ -54,7 +54,7 @@ entrance_no_vending_df =
 prop_entrance_no_vending = nrow(entrance_no_vending_df) / nrow(no_vending_df)
 ```
 
-```{r include=FALSE}
+```{r include = FALSE}
 transit_tidy_A_df = 
   transit_df %>% 
   mutate(across(c(route1:route11), as.character)) %>% 
@@ -81,7 +81,7 @@ There are **`r nrow(transit_tidy_A_df)`** distinct stations that serve the A tra
 
 ## Problem 2
 
-```{r include=FALSE}
+```{r include = FALSE}
 mr_trash_df = 
   read_excel("Data_Imports/202309_Trash_Wheel_Collection_Data.xlsx", 
              sheet = "Mr. Trash Wheel",
@@ -97,7 +97,7 @@ mr_trash_df =
   relocate(vessel_name)
 ```
 
-```{r include=FALSE}
+```{r include = FALSE}
 prof_trash_df = 
   read_excel("Data_Imports/202309_Trash_Wheel_Collection_Data.xlsx", 
              sheet = "Professor Trash Wheel",
@@ -113,7 +113,7 @@ prof_trash_df =
   relocate(vessel_name, 1:12, sports_balls)
 ```
 
-```{r include=FALSE}
+```{r include = FALSE}
 gwynnda_trash_df = 
   read_excel("Data_Imports/202309_Trash_Wheel_Collection_Data.xlsx", 
              sheet = "Gwynnda Trash Wheel",
@@ -132,27 +132,29 @@ gwynnda_trash_df =
 
 ```
 
-```{r include=FALSE}
+```{r include = FALSE}
 combined_trash_df = bind_rows(mr_trash_df, prof_trash_df, gwynnda_trash_df)
 ```
 
 
 ## Problem 3
-```{r}
+```{r include = FALSE}
 bakers_df = 
   read.csv("Data_Imports/gbb_datasets/bakers.csv", na = c(".", "NA", "", "N/A")) %>% 
   janitor::clean_names() %>% 
   arrange(series) %>% 
   separate(baker_name, into = c("baker_first_name", "baker_last_name"), sep = " ")
+```
   
-
+```{r include = FALSE}
 bakes_df = 
   read.csv("Data_Imports/gbb_datasets/bakes.csv", na = c(".", "NA", "", "N/A")) %>% 
   janitor::clean_names() %>% 
   mutate(baker = ifelse(baker == '"Jo"', "Jo", baker)) %>% 
   rename(baker_first_name = baker) 
-  
+```  
 
+```{r include = FALSE}
 results_df = 
   read.csv("Data_Imports/gbb_datasets/results.csv", na = c(".", "NA", "", "N/A"), 
           skip = 3,
@@ -160,10 +162,22 @@ results_df =
           col.names = c("series", "episode", "baker", "technical", "result")) %>% 
   mutate(baker = ifelse(baker == "Joanne", "Jo", baker)) %>% 
   rename(baker_first_name = baker)
-  
+```
+
+```{r include = FALSE}
 gbb_half_df = left_join(results_df, bakes_df, 
                         by = c("baker_first_name"="baker_first_name", "series"="series", "episode"="episode"))
 gbb_full_df = left_join(gbb_half_df, bakers_df, 
                         by = c("baker_first_name"="baker_first_name", "series"="series")) %>% 
   relocate(series, baker_first_name, 8:11, episode, 4:7)
+```
+
+
+```{r echo = FALSE}
+gbb_table_df = 
+  gbb_full_df %>% 
+  filter(series %in% (5:10)) %>% 
+  filter(result == "STAR BAKER")
+
+knitr::kable(gbb_table_df, format = "html" )
 ```
