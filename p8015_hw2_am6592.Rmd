@@ -159,9 +159,8 @@ results_df =
   read.csv("Data_Imports/gbb_datasets/results.csv", na = c(".", "NA", "", "N/A"), 
           skip = 3,
           header = FALSE, 
-          col.names = c("series", "episode", "baker", "technical", "result")) %>% 
-  mutate(baker = ifelse(baker == "Joanne", "Jo", baker)) %>% 
-  rename(baker_first_name = baker)
+          col.names = c("series", "episode", "baker_first_name", "technical", "result")) %>% 
+  mutate(baker = ifelse(baker_first_name == "Joanne", "Jo", baker_first_name))
 ```
 
 ```{r include = FALSE}
@@ -174,6 +173,12 @@ gbb_full_df = left_join(gbb_half_df, bakers_df,
 write.csv(gbb_full_df, "Data_Imports/gbb_datasets/gbb_full_dataset.csv" )
 ```
 
+  The first part of problem 3 looks at the three .csv files to combine them into 1. The first, **bakers.csv**, describes the name, age, and occupation of each contestant from season 1 to season 10. To organize this data set, the corresponding data frame in r arranged the rows in ascending order by season to match the other data sets and also split the "name" column into a first name column and last name column. This was done to make it easier to merge the data sets. The second .csv file, **bakes.csv**, looks at each contestant's show stopper and signature bakes from every episode in seasons 1 to 8. To clean this data, the name "Jo"  was changed to Jo to match the values in the other data sets. The column name for baker was also changed to baker first name to match the baker data set. The last .csv file was the **results.csv**, which gave every contestant's technical score and their result (in/out/star baker for most episodes, runner-up/winner for the season finale) for each episode in seasons 1 to 10. To clean this data, the first 3 rows were skipped as they contained no data, and the columns were renamed as they were given no headers in the original data set. Joanne was renamed to Jo to match the other two data sets.
+
+The three data sets were merged after the cleaning steps, and the columns were re-arranged to make it easier to follow along all the data. The full data set first gives the series and then baker information, followed by their technical scores, results, and bakes from each episode. The main question from this process for me came from how to organize the data- namely, I split the series and episode number since I thought it would be easier to follow the scores/results from each episode if those three columns were next to each other, but I know usually episode and series number are kept together.
+
+Below is ome of the data from the full data set. Specifically, the data shows all the star bakers from seasons 5 to 10:
+
 
 ```{r echo = FALSE}
 gbb_table_df = 
@@ -183,6 +188,9 @@ gbb_table_df =
 
 knitr::kable(gbb_table_df, format = "html" )
 ```
+
+For season 5, Richard received the most star bakes but was runner-up to Nancy, who only got star baker once in this season. In season 6, Ian and Nadiya both were star bakers 3 times, which corresponded them getting runner up and winner for this season, respectively. This followed similar trends with Candice (winner) and Andrew (runner up) in season 7; with Steven (runner up) and Sophie in season 8; and Kim-Joy and Ruby (runners up) and Rahul in season 9 in terms of more star bakes equating to being runner-up and winner. In season 10, however, Steph had the most star bakes but she was runner-up to David, who had no star bakes.
+
 
 ```{r include = FALSE}
 viewers_df = 
@@ -208,9 +216,10 @@ viewers_table_df =
   head(10)
 ```
 
+This last table shows the first 10 rows of the tidied viewers data set, which reports the amount of viewers each episode in seasons 1 to 10 garnered: 
+
 ```{r echo = FALSE}
 knitr::kable(viewers_table_df, format = "html" )
 ```
 
-#avg_s1_views = mean(pull(viewers_s1_df, views), na.rm = TRUE)
-```
+The average viewers (in millions of people) for season 1 was **`r mean(pull(viewers_s1_df, views), na.rm = TRUE)`**, while it was **`r mean(pull(viewers_s5_df, views), na.rm = TRUE)`** in season 5
