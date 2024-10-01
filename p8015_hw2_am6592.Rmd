@@ -170,6 +170,8 @@ gbb_half_df = left_join(results_df, bakes_df,
 gbb_full_df = left_join(gbb_half_df, bakers_df, 
                         by = c("baker_first_name"="baker_first_name", "series"="series")) %>% 
   relocate(series, baker_first_name, 8:11, episode, 4:7)
+
+write.csv(gbb_full_df, "Data_Imports/gbb_datasets/gbb_full_dataset.csv" )
 ```
 
 
@@ -180,4 +182,35 @@ gbb_table_df =
   filter(result == "STAR BAKER")
 
 knitr::kable(gbb_table_df, format = "html" )
+```
+
+```{r include = FALSE}
+viewers_df = 
+  read.csv("Data_Imports/gbb_datasets/viewers.csv", na = c(".", "NA", "", "N/A")) %>% 
+  janitor::clean_names() %>% 
+  pivot_longer(
+    series_1:series_10,
+    names_to = "series", 
+    values_to = "views")
+```
+
+```{r include = FALSE}
+viewers_s1_df = 
+  viewers_df %>% 
+  filter (series == "series_1")
+  
+viewers_s5_df = 
+  viewers_df %>% 
+  filter (series == "series_5")
+
+viewers_table_df = 
+  viewers_df %>% 
+  head(10)
+```
+
+```{r echo = FALSE}
+knitr::kable(viewers_table_df, format = "html" )
+```
+
+#avg_s1_views = mean(pull(viewers_s1_df, views), na.rm = TRUE)
 ```
